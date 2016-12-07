@@ -61,9 +61,13 @@ def registerPlayer(name):
         newplayer = Player(name = name)
         session.add(newplayer)
         session.commit()
-        return newplayer.id
+        message = "Player %s's name has been set to %s" % (newplayer.id , name)
+        value = {'success': True, 'message': message, 'id': newplayer.id}
     else:
-        return "You can only have two players at a time"
+        message = "You can only have two players at a time"
+        value = {'success': False, 'message': message}
+
+    return value
 
 #code to set initial score in the database
 def setInitialScore(pid, raw_entry):
@@ -77,15 +81,20 @@ def setInitialScore(pid, raw_entry):
     num_score = getScoreValue(tennis)
     if num_score:
         if session.query(Score).filter_by(player_id = pid).first() != None:
-            return "Initial score has already been set for player %s" % pid
+            message = "Initial score has already been set for player %s" % pid
+            value = {'success': False, 'message': message}
+            return value
         newscore = Score(points = num_score, player_id = pid)
         session.add(newscore)
         session.commit()
-        return "Player %s's score has been set to %s" % (pid, tennis)
+        message = "Player %s's score has been set to %s" % (pid, tennis)
+        value = {'success': True, 'message': message}
+        return value
     else:
         message = """The initial score for player %s - (one of Love, Fifteen, 
             Thirty, Forty, Advantage)""" % pid
-        return message.rstrip()
+        value = {'success': False, 'message': message}
+        return value
 
 def isInt(s):
     """Rturns whether the value passed in is an integer"""
@@ -148,4 +157,60 @@ def recordScore(scorer):
         session.commit()
     else:
         return "Couldn't find that user in the database"
+
+#Code Wrapper to get user entry for registerPlayer
+def getNameRegister(pid):
+    """Code to get user input for registerPlayer function"""
+    message = ""
+
+    while True:
+        if message:
+            print message
+        else: 
+            print "Please enter player %s's name:" % pid
+
+        choice = raw_input("> ")
+        value = registerPlayer(choice)        
+        if value['success']:
+            print value['message']
+            return value['id']
+        else:
+            message = value['message']
+
+#Code Wrapper to get user entry for setInitialScore
+def getInitialScore(pid):
+    """"Code to get user input setInitialScore function"""
+    message = ""
+
+    while True:
+        if message:
+            print message
+        else:
+            print "Enter the inital score for player %s" % pid
+
+        choice = raw_input("> ")
+        value = setInitialScore(pid, choice)
+        if value['success']:
+            print value['message']
+            return None
+        else:
+            message = value['message']
+
+
+def play_game():
+    """Code to play through game"""
+    deletePlayers()
+    deleteScores()
+
+    p1id = getNameRegister(1)
+    p2id = getNameRegister(2)
+
+    getInitialScore(p1id)
+    getInitialScore(p2id)
+
+    while True:
+
+
+play_game()
+
 

@@ -38,8 +38,8 @@ def testRegisterCountDelete():
     deleteScores()
     registerPlayer("Markov Chaney")
     registerPlayer("Joe Malik")
-    errorMessage = registerPlayer("Batman")
-    if not errorMessage:
+    value = registerPlayer("Batman")
+    if value['success']:
         raise ValueError("Should not be able to add three players.")
     c = countPlayers()
     if c != 2:
@@ -54,14 +54,13 @@ def testRegisterCountDelete():
 def testInitialScoreSet():
     deletePlayers()
     deleteScores()
-    registerPlayer("Chucky")
-    string = setInitialScore(1, "And")
-    if (string != """The initial score for player 1 - (one of Love, Fifteen, 
-            Thirty, Forty, Advantage)"""):
+    regValue = registerPlayer("Chucky")
+    value = setInitialScore(regValue['id'], "And")
+    if value['success']:
         raise ValueError("Should recive an error on wrong entry")
-    string = setInitialScore(1, "Love")
-    if string != "Player %s's score has been set to %s" % (1, "Love"):
-        raise ValueError(string)
+    value = setInitialScore(regValue['id'], "Love")
+    if not value['success']:
+        raise ValueError("The value should be set correctly")
     print "5. Can set inital scores for players"
 
 
