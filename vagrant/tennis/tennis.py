@@ -208,7 +208,7 @@ def play_game():
     getInitialScore(p1id)
     getInitialScore(p2id)
 
-    while True:
+    # while True:
 
 
 play_game()
